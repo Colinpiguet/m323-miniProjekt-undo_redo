@@ -35,4 +35,16 @@ Prompts mit CLaude AI, Sonnet 4.6
 
 **Prompt 12:**
 > „die renderTask funktion soll auch subtasks anzeigen, eingerückt unter dem parent task. wie mache ich das rekursiv?"
+
+**Prompt 13:**
+> „ich will keinen while loop mit var state machen, das wäre nicht funktional. wie kann ich einen cli loop rekursiv schreiben in kotlin? also eine funktion die sich selbst aufruft mit dem neuen state"
+
+**Prompt 14:**
+> „was ist tailrec in kotlin? brauche ich das bei meinem rekursiven loop oder nicht?"
+
+**Prompt 15:**
+> „wo genau ist der unterschied zwischen side effects und pure functions? ich will alle printlns nur in main.kt haben und nirgendwo sonst. kannst du mir zeigen wie ich das sauber trenne"
+
+**Prompt 16:**
+> „kannst du mir die main.kt fertig schreiben? sie soll den rekursiven loop haben, alle printlns nur dort, und die funktionen aus commandexecutor und renderer aufrufen. exit soll das programm beenden"
  
