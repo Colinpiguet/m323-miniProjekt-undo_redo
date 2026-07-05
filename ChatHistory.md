@@ -450,3 +450,74 @@ val (text, zahl) = pair
 ```
 
 Das funktioniert auch mit `data class` automatisch – jedes `val` in der Reihenfolge wird zu `component1`, `component2` usw.
+
+---
+
+**Ich:** kannst du unit tests für die core logik schreiben? also für addTask, completeTask, undo, redo, allSubtasksCompleted und taskExists. und richtige mit @Test
+
+**Claude:** Ja, hier die echten Unit Tests mit `kotlin.test`:
+
+```kotlin
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
+import kotlin.test.assertIs
+ 
+class TodoLogicTest {
+ 
+    @Test
+    fun `addTask fuegt einen Task hinzu`() {
+        val result = addTask(AppState(), "Hausaufgaben")
+        assertEquals(1, result.tasks.size)
+        assertEquals("Hausaufgaben", result.tasks.first().name)
+    }
+ 
+    @Test
+    fun `addTask veraendert den alten State nicht`() {
+        val state = AppState()
+        addTask(state, "Hausaufgaben")
+        assertTrue(state.tasks.isEmpty())  // immutable – original unverändert
+    }
+ 
+    @Test
+    fun `completeTask Parent wird completed wenn alle Subtasks done`() {
+        val state = AppState(tasks = listOf(
+            Task("Projekt", subtasks = listOf(Task("Teil 1"), Task("Teil 2")))
+        ))
+        val s1 = completeTask(state, "Teil 1")
+        assertFalse(s1.tasks.first().completed)   // noch nicht
+        val s2 = completeTask(s1, "Teil 2")
+        assertTrue(s2.tasks.first().completed)    // jetzt ja
+    }
+ 
+    @Test
+    fun `undo stellt vorherigen State wieder her`() {
+        val after = addTask(AppState(), "Task A")
+        val undone = undo(after)
+        assertTrue(undone.tasks.isEmpty())
+    }
+ 
+    @Test
+    fun `redo stellt rueckgaengig gemachten State wieder her`() {
+        val after = addTask(AppState(), "Task A")
+        val redone = redo(undo(after))
+        assertEquals("Task A", redone.tasks.first().name)
+    }
+ 
+    @Test
+    fun `taskExists findet Task in Subtasks`() {
+        val tasks = listOf(Task("Projekt", subtasks = listOf(Task("Doku"))))
+        assertTrue(taskExists(tasks, "Doku"))
+        assertFalse(taskExists(tasks, "Nichtvorhanden"))
+    }
+ 
+    @Test
+    fun `parseCommand gibt Unknown fuer unbekannten Befehl`() {
+        assertIs<Command.Unknown>(parseCommand("blabla"))
+        assertIs<Command.Unknown>(parseCommand("add"))  // add ohne Name
+    }
+}
+```
+
+In `build.gradle.kts` ist `testImplementation(kotlin("test"))` bereits drin – in IntelliJ einfach den grünen Play-Button neben der Klasse klicken.
