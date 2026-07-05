@@ -17,3 +17,22 @@ Prompts mit CLaude AI, Sonnet 4.6
 
 **Prompt 6:**
 > „kannst du mir die rekursive funktion allSubtasksCompleted nochmal erklären schritt für schritt? ich muss das dem lehrer erklären können und verstehe noch nicht genau was beim base case passiert"
+
+**Prompt 7:**
+> „was ist eine sealed class in kotlin und warum ist die besser als ein normales enum wenn ich verschiedene befehle wie add, complete, undo habe? ich will das mit pattern matching verwenden"
+
+**Prompt 8:**
+> „ok kannst du mir eine sealed class Command machen mit Add, Complete, Undo, Redo und Unknown. Add und Complete brauchen einen namen als parameter, undo und redo nicht"
+
+**Prompt 9:**
+> „jetzt brauche ich eine funktion parseCommand die einen string wie 'add Hausaufgaben' nimmt und daraus einen Command macht. wie splitte ich den string am besten auf und was passiert wenn jemand nur 'add' ohne namen eingibt"
+
+**Prompt 10:**
+> „was genau sind higher-order functions? kannst du mir zeigen wie ich eine executeCommand funktion schreibe die eine funktion als parameter nimmt? ich verstehe das konzept noch nicht so ganz"
+
+**Prompt 11:**
+> „ich will die ausgabe von der logik trennen. also keine printlns in meinen logik-funktionen. wie mache ich das am besten? kannst du eine renderer funktion schreiben die nur strings zurückgibt und nichts selbst ausdruckt"
+
+**Prompt 12:**
+> „die renderTask funktion soll auch subtasks anzeigen, eingerückt unter dem parent task. wie mache ich das rekursiv?"
+ 
