@@ -1,9 +1,6 @@
 package todo
 
-// ─── Input Parsing ────────────────────────────────────────────────────────────
 // Pure function: wandelt einen rohen String in einen Command um.
-// Syntax für Subtask: add <parent> > <subtask>
-// Beispiel:           add Projekt > Dokumentation schreiben
 fun parseCommand(input: String): Command {
     val trimmed = input.trim()
     val parts = trimmed.split(" ", limit = 2)
@@ -29,18 +26,31 @@ fun parseCommand(input: String): Command {
     }
 }
 
-// ─── Command Executor (HOF) ───────────────────────────────────────────────────
-// Higher-Order Function: nimmt onUnknown als Funktion entgegen.
+// Higher-Order Function: executeCommand nimmt onUnknown als Funktion entgegen.
 fun executeCommand(
     state: AppState,
     command: Command,
     onUnknown: (AppState) -> AppState = { it }
-): AppState =
-    when (command) {
-        is Command.Add        -> addTask(state, command.name)
-        is Command.AddSubtask -> addSubtask(state, command.parentName, command.subtaskName)
-        is Command.Complete   -> completeTask(state, command.name)
-        is Command.Undo       -> undo(state)
-        is Command.Redo       -> redo(state)
-        is Command.Unknown    -> onUnknown(state)
+): Pair<AppState, Command> {
+    // Bei AddSubtask zuerst prüfen ob der Parent existiert.
+    // Falls nicht → ParentNotFound zurückgeben, State unverändert lassen.
+    val resolvedCommand = when (command) {
+        is Command.AddSubtask ->
+            if (!taskExists(state.tasks, command.parentName))
+                Command.ParentNotFound(command.parentName)
+            else command
+        else -> command
     }
+
+    val newState = when (resolvedCommand) {
+        is Command.Add           -> addTask(state, resolvedCommand.name)
+        is Command.AddSubtask    -> addSubtask(state, resolvedCommand.parentName, resolvedCommand.subtaskName)
+        is Command.Complete      -> completeTask(state, resolvedCommand.name)
+        is Command.Undo          -> undo(state)
+        is Command.Redo          -> redo(state)
+        is Command.Unknown       -> onUnknown(state)
+        is Command.ParentNotFound -> state  // State bleibt unverändert
+    }
+
+    return Pair(newState, resolvedCommand)
+}

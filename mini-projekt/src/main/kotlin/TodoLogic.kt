@@ -89,3 +89,12 @@ fun redo(state: AppState): AppState =
             redoStack = state.redoStack.drop(1)
         )
     }
+
+// Prüft rekursiv ob ein Task mit dem gegebenen Namen existiert.
+fun taskExists(tasks: List<Task>, name: String): Boolean =
+    when {
+        tasks.isEmpty() -> false
+        tasks.first().name == name -> true
+        taskExists(tasks.first().subtasks, name) -> true
+        else -> taskExists(tasks.drop(1), name)
+    }

@@ -1,50 +1,92 @@
-Prompts mit CLaude AI, Sonnet 4.6
+# Undo/Redo CLI Todo App – Kotlin
 
-**Prompt 1:**
-> „ich mache ein schulprojekt in kotlin, es geht um eine todo app mit undo und redo. kannst du mir erklären wie man daten immutable hält in kotlin? also was ist der unterschied zwischen val und var und warum sollte ich für funktionale programmierung immer val nehmen"
-
-**Prompt 2:**
-> „ok und wie würde dann so eine data class für einen Task aussehen der auch subtasks haben kann? der task soll einen namen haben und man soll ihn abhaken können. bitte noch keine logik nur die datenstruktur"
-
-**Prompt 3:**
-> „jetzt brauche ich noch einen AppState der die ganze todo liste hält plus einen undo stack und redo stack. wie macht man das immutable? also ich will keine mutable lists verwenden"
-
-**Prompt 4:**
-> „schreib mir eine pure function addTask die einen task zur liste hinzufügt. sie soll den alten state nicht verändern sondern einen neuen zurückgeben. ich verstehe noch nicht ganz wie copy() funktioniert, kannst du das erklären"
-
-**Prompt 5:**
-> „ich brauche eine funktion completeTask die einen task als erledigt markiert. wenn der task subtasks hat soll erst geprüft werden ob alle subtasks done sind, nur dann wird der parent auch auf done gesetzt. wie mache ich diesen check am besten rekursiv?"
-
-**Prompt 6:**
-> „kannst du mir die rekursive funktion allSubtasksCompleted nochmal erklären schritt für schritt? ich muss das dem lehrer erklären können und verstehe noch nicht genau was beim base case passiert"
-
-**Prompt 7:**
-> „was ist eine sealed class in kotlin und warum ist die besser als ein normales enum wenn ich verschiedene befehle wie add, complete, undo habe? ich will das mit pattern matching verwenden"
-
-**Prompt 8:**
-> „ok kannst du mir eine sealed class Command machen mit Add, Complete, Undo, Redo und Unknown. Add und Complete brauchen einen namen als parameter, undo und redo nicht"
-
-**Prompt 9:**
-> „jetzt brauche ich eine funktion parseCommand die einen string wie 'add Hausaufgaben' nimmt und daraus einen Command macht. wie splitte ich den string am besten auf und was passiert wenn jemand nur 'add' ohne namen eingibt"
-
-**Prompt 10:**
-> „was genau sind higher-order functions? kannst du mir zeigen wie ich eine executeCommand funktion schreibe die eine funktion als parameter nimmt? ich verstehe das konzept noch nicht so ganz"
-
-**Prompt 11:**
-> „ich will die ausgabe von der logik trennen. also keine printlns in meinen logik-funktionen. wie mache ich das am besten? kannst du eine renderer funktion schreiben die nur strings zurückgibt und nichts selbst ausdruckt"
-
-**Prompt 12:**
-> „die renderTask funktion soll auch subtasks anzeigen, eingerückt unter dem parent task. wie mache ich das rekursiv?"
-
-**Prompt 13:**
-> „ich will keinen while loop mit var state machen, das wäre nicht funktional. wie kann ich einen cli loop rekursiv schreiben in kotlin? also eine funktion die sich selbst aufruft mit dem neuen state"
-
-**Prompt 14:**
-> „was ist tailrec in kotlin? brauche ich das bei meinem rekursiven loop oder nicht?"
-
-**Prompt 15:**
-> „wo genau ist der unterschied zwischen side effects und pure functions? ich will alle printlns nur in main.kt haben und nirgendwo sonst. kannst du mir zeigen wie ich das sauber trenne"
-
-**Prompt 16:**
-> „kannst du mir die main.kt fertig schreiben? sie soll den rekursiven loop haben, alle printlns nur dort, und die funktionen aus commandexecutor und renderer aufrufen. exit soll das programm beenden"
+Mini Projekt | Modul 323 – Funktionale Programmierung
  
+---
+
+## Projektbeschreibung
+
+Eine CLI-basierte Todo-Applikation mit Undo/Redo-Funktionalität.
+Umgesetzt in **Kotlin** mit funktionalen Programmierkonzepten.
+
+### Befehle
+| Befehl | Beschreibung |
+|---|---|
+| `add <name>` | Fügt einen neuen Task hinzu |
+| `add <parent> > <subtask>` | Fügt einen Subtask zu einem bestehenden Task hinzu |
+| `complete <name>` | Markiert einen Task als erledigt |
+| `undo` | Macht die letzte Aktion rückgängig |
+| `redo` | Stellt die letzte rückgängig gemachte Aktion wieder her |
+| `exit` | Beendet das Programm |
+
+### Beispiel
+```
+> add Projekt
+>> Task 'Projekt' hinzugefügt   [undo möglich] [kein redo]
+ 
+--- Todo Liste ---
+[ ] Projekt
+-----------------
+ 
+> add Projekt > Dokumentation
+>> Subtask 'Dokumentation' zu 'Projekt' hinzugefügt
+ 
+--- Todo Liste ---
+[ ] Projekt
+    [ ] Dokumentation
+-----------------
+ 
+> complete Dokumentation
+>> Task 'Dokumentation' abgehakt
+ 
+--- Todo Liste ---
+[x] Projekt
+    [x] Dokumentation
+-----------------
+ 
+> undo
+>> Undo ausgefuehrt   [undo möglich] [redo möglich]
+ 
+> redo
+>> Redo ausgefuehrt   [undo möglich] [kein redo]
+```
+ 
+---
+
+## Projektstruktur
+
+```
+src/main/kotlin/todo/
+├── Model.kt            → Immutable Datenstrukturen (Task, AppState)
+├── Command.kt          → Sealed class mit allen Befehlen
+├── TodoLogic.kt        → Pure functions (addTask, completeTask, undo, redo)
+├── CommandExecutor.kt  → parseCommand + executeCommand (HOF)
+├── Renderer.kt         → Pure render-Funktionen, kein println
+└── Main.kt             → CLI-Loop, EINZIGER Ort mit println
+```
+ 
+---
+
+## Funktionale Konzepte im Einsatz
+
+| Konzept | Wo | Beispiel |
+|---|---|---|
+| Pure Functions | `TodoLogic.kt`, `Renderer.kt` | `addTask(state, name): AppState` |
+| Immutable Data | `Model.kt` | `val name: String`, `copy()` statt mutation |
+| Rekursion | `allSubtasksCompleted`, `renderTask`, `runLoop` | `allSubtasksCompleted(subtasks.drop(1))` |
+| Pattern Matching | `CommandExecutor.kt`, `Renderer.kt` | `when (command) { is Command.Add -> ... }` |
+| Map / Filter | `TodoLogic.kt`, `Renderer.kt` | `state.tasks.map { completeTaskByName(it, name) }` |
+| HOF | `CommandExecutor.kt` | `executeCommand(..., onUnknown: (AppState) -> AppState)` |
+| Side-Effects isoliert | `Main.kt` | Alle `println` nur in `runLoop()` |
+ 
+---
+
+## Starten
+
+In IntelliJ: grüner Play-Button neben `fun main()` in `Main.kt`
+
+Oder über Terminal:
+```bash
+kotlinc src/main/kotlin/todo/*.kt -include-runtime -d app.jar
+java -jar app.jar
+```
