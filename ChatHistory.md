@@ -367,11 +367,7 @@ tailrec fun runLoop(state: AppState) {
 
 Das `renderMenu()` ist in `Renderer.kt` als pure function – gibt nur einen String zurück. Das `println` ist in `Main.kt`. Saubere Trennung.
 
- 
----
 
-## Fixes & Erweiterungen
- 
 ---
 
 **Ich:** wenn ich 'add HA > english' tippe aber HA existiert noch nicht als task, dann wird einfach nichts angezeigt. kann man da eine fehlermeldung ausgeben die sagt dass der parent task nicht existiert?
